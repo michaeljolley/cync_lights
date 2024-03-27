@@ -1,0 +1,45 @@
+@email = dd
+@password = xx
+@2fa = 573244
+
+### 
+POST https://api.gelighting.com/v2/two_factor/email/verifycode
+Content-Type: application/json
+
+{
+    "corp_id": "1007d2ad150c4000", 
+    "email": "{{email}}", 
+    "local_lang": "en-us"
+}
+
+###
+# @name GetAccessToken
+POST https://api.gelighting.com/v2/user_auth/two_factor
+Content-Type: application/json
+
+{
+    "corp_id": "1007d2ad150c4000", 
+    "email": "{{email}}", 
+    "password": "{{password}}",
+    "two_factor": "{{2fa}}", 
+    "resource":"abcdefghijklmnop"
+}
+
+###
+@access_token = {{GetAccessToken.response.body.$.access_token}}
+@user = {{GetAccessToken.response.body.$.user_id}}
+          
+###
+# @name GetDevices
+GET https://api.gelighting.com/v2/user/{{user}}/subscribe/devices
+Content-Type: application/json
+Access-Token: {{access_token}}
+
+###
+@product_id = {{GetDevices.response.body.$.[1].product_id}}
+@device_id = {{GetDevices.response.body.$.[1].id}}
+
+###
+GET https://api.gelighting.com/v2/product/{{product_id}}/device/{{device_id}}/property
+Content-Type: application/json
+Access-Token: {{access_token}}
